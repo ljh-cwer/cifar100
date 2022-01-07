@@ -6,6 +6,7 @@ import os
 import sys
 import re
 import datetime
+import time
 
 import numpy
 
@@ -174,7 +175,6 @@ def get_training_dataloader(mean, std, batch_size=16, num_workers=2, shuffle=Tru
         shuffle: whether to shuffle
     Returns: train_data_loader:torch dataloader object
     """
-
     transform_train = transforms.Compose([
         #transforms.ToPILImage(),
         transforms.RandomCrop(32, padding=4),
@@ -185,10 +185,12 @@ def get_training_dataloader(mean, std, batch_size=16, num_workers=2, shuffle=Tru
     ])
     #cifar100_training = CIFAR100Train(path, transform=transform_train)
     cifar100_training = torchvision.datasets.CIFAR100(root='./data', train=True, download=True, transform=transform_train)
+    ts = time.time()
     cifar100_training_loader = DataLoader(
         cifar100_training, shuffle=shuffle, num_workers=num_workers, batch_size=batch_size)
+    tf = time.time()
 
-    return cifar100_training_loader
+    return cifar100_training_loader,tf-ts
 
 def get_test_dataloader(mean, std, batch_size=16, num_workers=2, shuffle=True):
     """ return training dataloader
@@ -208,10 +210,12 @@ def get_test_dataloader(mean, std, batch_size=16, num_workers=2, shuffle=True):
     ])
     #cifar100_test = CIFAR100Test(path, transform=transform_test)
     cifar100_test = torchvision.datasets.CIFAR100(root='./data', train=False, download=True, transform=transform_test)
+    ts = time.time()
     cifar100_test_loader = DataLoader(
         cifar100_test, shuffle=shuffle, num_workers=num_workers, batch_size=batch_size)
+    tf = time.time()
 
-    return cifar100_test_loader
+    return cifar100_test_loader,tf-ts
 
 def compute_mean_std(cifar100_dataset):
     """compute the mean and std of cifar100 dataset
